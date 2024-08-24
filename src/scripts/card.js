@@ -1,10 +1,11 @@
 export { createCard, deleteCard, likeCard };
-const cardTemplate = document.querySelector("#card-template").content;
+
 
 
 // Функция для отрисовки карточки
 function createCard(cardData, onDelete, onLike, onClick, cardContainer) {
     // клонируем содержимое шаблона
+    const cardTemplate = document.querySelector("#card-template").content;
     
     const cardElement = cardTemplate
       .querySelector(".places__item")
@@ -15,8 +16,7 @@ function createCard(cardData, onDelete, onLike, onClick, cardContainer) {
     cardImageElement.src = cardData.link;
     cardImageElement.alt = cardData.name;
   
-    const cardTitle = (cardElement.querySelector(".card__title").textContent =
-      cardData.name);
+    (cardElement.querySelector(".card__title").textContent = cardData.name);
     const deleteButton = cardElement.querySelector(".card__delete-button");
   
     // добавляем обработчик клика на крестик
@@ -29,7 +29,7 @@ function createCard(cardData, onDelete, onLike, onClick, cardContainer) {
     likeButton.addEventListener("click", onLike);
 
     //добавляем обработчик клика на карточку
-    cardElement.addEventListener('click', onClick);
+    cardImageElement.addEventListener('click', onClick);
   
     return cardElement;
   }
