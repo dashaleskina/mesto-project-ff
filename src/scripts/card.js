@@ -1,9 +1,7 @@
 import { likeCardServer, dislikeCardServer } from "./api.js";
-import { openPopup } from "./modal";
 
-export { createCard, deleteButtonClick, likeCard, onDelete };
+export { createCard, likeCard };
 const cardTemplate = document.querySelector("#card-template").content;
-let onDelete = null;
 
 function createCard(obj) {
   const cardElement = cardTemplate
@@ -30,8 +28,11 @@ function createCard(obj) {
     likes.length
   );
 
-  likeButton.addEventListener("click", obj.functionsSet.likeCard);
-  deleteButton.addEventListener("click", obj.functionsSet.deleteButtonClick);
+  // Передаем необходимые элементы в likeCard
+  likeButton.addEventListener("click", () => likeCard(cardElement, likeCounter, likeButton));
+  deleteButton.addEventListener("click", () =>
+    obj.functionsSet.deleteButtonClick(cardElement)
+  );
   cardImageElement.addEventListener("click", () => {
     obj.functionsSet.openFullCard(cardImageElement.src, cardImageElement.alt);
   });
@@ -47,48 +48,30 @@ function createCard(obj) {
   return cardElement;
 }
 
-function setCardData(
-  element,
-  image,
-  title,
-  counter,
-  cardId,
-  link,
-  name,
-  likesCount
-) {
-  element.dataset.cardId = cardId;
+function setCardData(element, image, title, counter, cardId, link, name, likesCount) {
+  element.cardId = cardId;
   image.src = link;
   image.alt = name;
   title.textContent = name;
   counter.textContent = likesCount;
 }
 
-function deleteButtonClick(evt) {
-  const deleteCardPopup = document.querySelector(".popup_type_delete-card");
-  onDelete = evt.target.closest(".card");
-  openPopup(deleteCardPopup);
-}
-
 // Функция проставления лайка
-function likeCard(evt) {
-  const card = evt.target.closest(".places__item");
-  const likeCounter = card.querySelector(".like_counter");
-
-  if (!evt.target.classList.contains("card__like-button_is-active")) {
-    likeCardServer(card.dataset.cardId)
+function likeCard(cardElement, likeCounter, likeButton) {
+  if (!likeButton.classList.contains("card__like-button_is-active")) {
+    likeCardServer(cardElement.cardId)
       .then((data) => {
         likeCounter.textContent = data.likes.length;
-        evt.target.classList.add("card__like-button_is-active");
+        likeButton.classList.add("card__like-button_is-active");
       })
       .catch((error) => {
         console.error(error);
       });
   } else {
-    dislikeCardServer(card)
+    dislikeCardServer(cardElement.cardId)
       .then((data) => {
         likeCounter.textContent = data.likes.length;
-        evt.target.classList.remove("card__like-button_is-active");
+        likeButton.classList.remove("card__like-button_is-active");
       })
       .catch((error) => {
         console.error(error);

@@ -1,5 +1,5 @@
 import "../pages/index.css";
-import { createCard, deleteButtonClick, likeCard, onDelete } from "./card";
+import { createCard, likeCard } from "./card";
 import { openPopup, closePopup } from "./modal.js";
 import { enableValidation, clearValidation } from "./validation.js";
 import {
@@ -111,7 +111,6 @@ function editProfileSubmit(evt) {
       changeButtonText(editAuthorPopup, "Сохранить");
     });
 
-  clearValidation(profileForm, configValidation);
 }
 
 // сбрасываем форму добавления карточки, предварительно очищая валидацию
@@ -149,7 +148,6 @@ function addCardSubmitForm(evt) {
     });
 
   newCard.reset();
-  clearValidation(newCard, configValidation);
 }
 
 //обрабатываем функцию изменения аватара, сбрасываем форму, очищаем валидацию
@@ -203,12 +201,18 @@ function changeButtonText(popup, text) {
 
 //обработаем удаление карточки
 deleteCardPopup.addEventListener("submit", handleCardDeleteSubmit);
+let onDelete = null;
+
+function deleteButtonClick(cardElement) {
+  onDelete = cardElement;
+  openPopup(deleteCardPopup);
+}
 
 function handleCardDeleteSubmit(evt) {
   evt.preventDefault();
 
   if (onDelete) {
-    const cardId = onDelete.dataset.cardId;
+    const cardId = onDelete.cardId;
 
     deleteCardServer(cardId)
       .then(() => {

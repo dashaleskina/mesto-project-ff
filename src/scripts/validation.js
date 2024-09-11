@@ -12,14 +12,13 @@ function showInputError(formElement, inputElement, errorText, configSet) {
 }
 
 function hideInputError(formElement, inputElement, configSet) {
-  // делаем все тоже самое, что и в функции showInputError, только наоборот
-  // вместо текста вставляем пустое поле
   const inputErrorElement = formElement.querySelector(
     `.${inputElement.id}-error`
   );
   inputElement.classList.remove(configSet.inputErrorClass);
   inputErrorElement.textContent = "";
   inputErrorElement.classList.remove(configSet.inputErrorClass);
+  inputElement.setCustomValidity("");
 }
 
 function isValid(formElement, inputElement, configSet) {
@@ -55,8 +54,10 @@ const hasInvalidInput = (inputList) => {
 const toggleButtonState = (inputList, buttonElement, configSet) => {
   if (hasInvalidInput(inputList)) {
     buttonElement.classList.add(configSet.inactiveButtonClass);
+    buttonElement.disabled = true;
   } else {
     buttonElement.classList.remove(configSet.inactiveButtonClass);
+    buttonElement.disabled = false;
   }
 };
 
@@ -86,13 +87,13 @@ const clearValidation = (formElement, configSet) => {
   );
 
   inputList.forEach((inputElement) => {
-    inputElement.classList.remove(configSet.inputErrorClass);
-    const inputErrorElement = formElement.querySelector(
-      `.${inputElement.id}-error`
-    );
-    inputErrorElement.classList.remove(configSet.errorClass);
-    inputErrorElement.textContent = "";
+    hideInputError(formElement, inputElement, configSet);
   });
+
+  const buttonElement = formElement.querySelector(
+    configSet.submitButtonSelector
+  );
+  toggleButtonState(inputList, buttonElement, configSet);
 };
 
 //применим валидацию ко всем формам
